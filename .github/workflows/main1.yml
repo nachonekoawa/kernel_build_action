@@ -1,0 +1,43 @@
+name: CI
+on:
+  push:
+    branches: main
+    paths:
+      - '.github/workflows/main.yml'
+      - 'action.yml'
+
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ci-test:
+    name: Build Kernel
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Build Kernel
+      uses: ./
+      with:
+          kernel-url: https://github.com/nachonekoawa/android_kernel_xiaomi_mt6765
+          kernel-dir: msm-4.19
+          kernel-branch: lotus-4.9.205-q-lineage-20
+          config: certus_defconfig
+          arch: arm64
+          aosp-gcc: true
+          aosp-clang: true
+          ksu: false
+          ksu-version: main
+          android-version: 13
+          aosp-clang-version: r383902
+          disable-lto: true
+          anykernel3: true
