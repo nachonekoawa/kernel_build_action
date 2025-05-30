@@ -1,0 +1,43 @@
+name: Neko Kernel
+on:
+  push:
+    branches: main
+    paths:
+      - '.github/workflows/main.yml'
+      - 'action.yml'
+
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ci-test:
+    name: Build Kernel
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Build Kernel
+      uses: ./
+      with:
+          kernel-url: https://github.com/MiCode/Xiaomi_Kernel_OpenSource/tree/cactus-o-oss
+          kernel-dir: msm-4.19
+          kernel-branch: cactus-o-oss
+          config: certus_cereus_defconfig
+          arch: arm
+          aosp-gcc: true
+          aosp-clang: true
+          ksu: false
+          ksu-version: main
+          android-version: 8.1
+          aosp-clang-version: r3859424
+          disable-lto: true
+          anykernel3: true
